@@ -4,6 +4,12 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
+  reserva: string;
+ 
+  @IsString()
+  hotel: string;
+ 
+  @IsString()
   name: string;
 
   @IsString()
