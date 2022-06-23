@@ -1,53 +1,45 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { User, UserDocument } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
+  constructor(@InjectModel(User.name)private userModel : Model<UserDocument>) {
+    
+  })
   private users:User[]=[];
   create(createUserDto: CreateUserDto) {
-    const currentMaxiId = this.users[this.users.length -1]?.id || 0;
-   
-    const id = currentMaxiId +1;
-
-    const user ={
-      id,
-     ...createUserDto,
-    };
-    this.users.push(user);
-    return user;
+    const user = new this.userModel(createUserDto);
+    return user.save();
   }
 
   findAll() {
-    return this.users;
+    return this.userModel.find();
   }
 
-  findOne(id: number) {
-      const index = this.users.findIndex((user) => user.id=id);
-
-      return this.users[index];
+  findOne(id: string) {
+      return this.userModel.findById(id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-   const user = this.findOne(id);
-   
-   const newUser = {
-    ...user,
-    ...updateUserDto,
-   };
-   const index = this.users.findIndex((user) => user.id=id);
-   this.users[index] =newUser;
-
-    return newUser;
+  update(id: string, updateUserDto: UpdateUserDto) {
+    return this.userModel.findByIdAndUpdate({
+      _id:id
+    },
+   {
+     updateUserDto
+    },
+   {
+    new:true
+   },
+   );
   }
 
-  remove(id: number) {
-    const index = this.users.findIndex((user) => user.id=id);
-    if(index==-1){
-      throw new NotFoundException('User with id ${id} not found');
-    }
-    this.users.splice(index,1);
-    return ;
+  remove(id: string) {
+    return this.userModel.deleteOne({
+      _id:id,
+    })
+    .exec();
   }
 }
