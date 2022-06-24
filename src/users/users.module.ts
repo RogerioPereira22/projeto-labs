@@ -9,9 +9,9 @@ import { User, UserSchema } from './entities/user.entity';
     MongooseModule.forRoot(
       'mongodb+srv://Oriental222:5xW4z9Zcu-QD-Vt@cluster0.ynhjkvu.mongodb.net/?retryWrites=true&w=majority',
     ),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), 
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService],
 })
 export class UsersModule {}

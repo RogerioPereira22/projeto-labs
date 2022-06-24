@@ -29,7 +29,8 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    if (!(this.usersService.findOne(id))) {
+    const user = this.usersService.findOne(id);
+    if (!user) {
       throw new NotFoundException('User does not exists');
     }
     return;
@@ -37,7 +38,8 @@ export class UsersController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    if (!(this.usersService.update(id, updateUserDto))) {
+    const user = this.usersService.update(id, updateUserDto);
+    if (!user) {
       throw new NotFoundException('User does not exists');
     }
     return;

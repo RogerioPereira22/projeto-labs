@@ -6,7 +6,7 @@ export class CreateUserDto {
   @IsString()
   reserva: string;
  
-  @IsString()
+ @IsString()
   hotel: string;
  
   @IsString()
