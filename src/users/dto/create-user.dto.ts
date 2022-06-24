@@ -4,15 +4,17 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
-  reserva: string;
- 
- @IsString()
-  hotel: string;
- 
-  @IsString()
   name: string;
 
   @IsString()
   @MinLength(6)
   password: string;
+}
+export class Hotel extends CreateUserDto {
+  @IsString()
+  hotelUsuario: string;
+}
+export class Reserva extends Hotel {
+  @IsString()
+  reservaUsuario: string;
 }
