@@ -12,9 +12,9 @@ export class CreateUserDto {
 }
 export class Hotel extends CreateUserDto {
   @IsString()
-  hotelUsuario: string;
+  hotel: string;
 }
 export class Reserva extends Hotel {
   @IsString()
-  reservaUsuario: string;
+  reserva: string;
 }

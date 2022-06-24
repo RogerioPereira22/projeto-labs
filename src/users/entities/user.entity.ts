@@ -13,12 +13,12 @@ export class User {
 }
 export class Hotel extends User {
   @Prop()
-  hotelUsuario: string;
+  hotel: string;
 }
 
 export class Reserva extends Hotel {
   @Prop()
-  reservaUsuario: string;
+  reserva: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
