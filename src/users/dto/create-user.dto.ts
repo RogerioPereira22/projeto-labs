@@ -1,5 +1,9 @@
 import { IsEmail, IsString, MinLength } from 'class-validator';
-export class CreateUserDto {
+export class CreateUserDto implements Hotel {
+  @IsString()
+  reserva: string;
+  @IsString()
+  hotel: string;
   @IsEmail()
   email: string;
 
@@ -9,12 +13,16 @@ export class CreateUserDto {
   @IsString()
   @MinLength(6)
   password: string;
+
+
 }
-export class Hotel extends CreateUserDto {
+export class Hotel implements Reserva {
+  reserva: string;
   @IsString()
   hotel: string;
 }
-export class Reserva extends Hotel {
+export class Reserva  {
+ 
   @IsString()
   reserva: string;
 }
