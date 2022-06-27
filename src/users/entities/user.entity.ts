@@ -11,14 +11,5 @@ export class User {
   @Prop()
   password: string;
 }
-export class Hotel extends User {
-  @Prop()
-  hotel: string;
-}
-
-export class Reserva extends Hotel {
-  @Prop()
-  reserva: string;
-}
 
 export const UserSchema = SchemaFactory.createForClass(User);
