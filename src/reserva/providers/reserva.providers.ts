@@ -1,5 +1,5 @@
 import { Connection } from 'mongoose';
-import { ReservaSchema } from './reserva.schema';
+import { ReservaSchema } from '../schema/reserva.schema';
 
 export const ReservaProviders = [
   {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateReservaDto } from './dto/create-reserva.dto';
-import { UpdateReservaDto } from './dto/update-reserva.dto';
-import { Reserva } from './reserva.interfaces';
+import { CreateReservaDto } from '../dto/create-reserva.dto';
+import { UpdateReservaDto } from '../dto/update-reserva.dto';
+import { Reserva } from '../entities/reserva.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 

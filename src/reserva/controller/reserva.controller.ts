@@ -8,10 +8,9 @@ import {
   Delete,
   NotFoundException,
 } from '@nestjs/common';
-import { ReservaService } from './reserva.service';
-import { CreateReservaDto } from './dto/create-reserva.dto';
-import { UpdateReservaDto } from './dto/update-reserva.dto';
-
+import { ReservaService } from '../service/reserva.service';
+import { CreateReservaDto } from '../dto/create-reserva.dto';
+import { UpdateReservaDto } from '../dto/update-reserva.dto';
 @Controller('reserva')
 export class ReservaController {
   constructor(private readonly reservaService: ReservaService) {}
