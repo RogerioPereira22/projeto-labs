@@ -1,7 +1,5 @@
 import { IsEmail, IsString, MinLength } from 'class-validator';
-import { Hotel } from '../interfaces/hotel.interfacests';
-export class CreateUserDto  {
- 
+export class CreateUserDto {
   @IsEmail()
   email: string;
 
@@ -11,8 +9,4 @@ export class CreateUserDto  {
   @IsString()
   @MinLength(6)
   password: string;
-
-
 }
-
-
