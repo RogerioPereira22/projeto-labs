@@ -1,10 +1,7 @@
 import { IsEmail, IsString, MinLength } from 'class-validator';
-import { Hotel } from '../entities/hotel.entity';
-export class CreateUserDto implements Hotel {
-  @IsString()
-  reserva: string;
-  @IsString()
-  hotel: string;
+import { Hotel } from '../interfaces/hotel.interfacests';
+export class CreateUserDto  {
+ 
   @IsEmail()
   email: string;
 

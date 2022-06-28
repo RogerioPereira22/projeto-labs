@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { HotelModule } from './hotel/hotel.module';
+import { UsersModule } from './users/module/users.module';
+import { HotelModule } from './hotel/module/hotel.module';
 import { ReservaModule } from './reserva/reserva.module';
 
 @Module({
