@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from '../controller/app.controller';
-import { AppService } from '../service/app.service';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { DatabaseModule } from 'src/database/database.module';
 import { RouterModule } from '@nestjs/core';
 import { UsersModule } from 'src/users/module/users.module';
