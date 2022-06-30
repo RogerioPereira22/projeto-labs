@@ -13,10 +13,14 @@ import {
   comparePassword,
 } from 'src/common/encrypt/encryption';
 import { LoginUserDto } from '../dto/login-user.dto';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel('USERS_MODEL') private userModel: Model<User>) {}
+  constructor(
+    private _authService: AuthService,
+    @InjectModel('USERS_MODEL') private userModel: Model<User>,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
@@ -39,20 +43,19 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-   
-    try { return this.userModel.findByIdAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        updateUserDto,
-      },
-      {
-        new: true,
-      },
-    );
-    }
-    catch(error){
+    try {
+      return this.userModel.findByIdAndUpdate(
+        {
+          _id: id,
+        },
+        {
+          updateUserDto,
+        },
+        {
+          new: true,
+        },
+      );
+    } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
@@ -64,20 +67,20 @@ export class UsersService {
       })
       .exec();
   }
-  async login({username, password}: LoginUserDto): Promise<any>{
+  async login({ username, password }: LoginUserDto): Promise<any> {
     try {
-      const user = await this._userRepository.findOne({where: {username: username}});
-      if(!user) throw new BadRequestException(`User not exist`);
+      const user = await this.userModel.findOne({
+        where: { username: name },
+      });
+      if (!user) throw new BadRequestException(`User not exist`);
 
-      if(comparePassword(password, user.password)){
+      if (comparePassword(password, user.password)) {
         return this._authService.login(user);
       }
 
       throw new BadRequestException(`Password not match`);
-    }
-    catch(error){
+    } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
-
 }
