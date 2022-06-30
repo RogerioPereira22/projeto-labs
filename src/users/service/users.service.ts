@@ -14,12 +14,13 @@ import {
 } from 'src/common/encrypt/encryption';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { ConfigurationKeys } from 'src/config/configuration.keys';
 
 @Injectable()
 export class UsersService {
   constructor(
     private _authService: AuthService,
-    @InjectModel('USERS_MODEL') private userModel: Model<User>,
+    @InjectModel(ConfigurationKeys.USERS_MODEL) private userModel: Model<User>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -36,9 +37,8 @@ export class UsersService {
 
   async findAll(): Promise<User[]> {
     try {
-    return this.userModel.find().exec();
-    }
-    catch(error){
+      return this.userModel.find().exec();
+    } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
@@ -79,7 +79,7 @@ export class UsersService {
   async login({ username, password }: LoginUserDto): Promise<any> {
     try {
       const user = await this.userModel.findOne({
-        where: { username: name },
+        where: { username: this.userModel.name },
       });
       if (!user) throw new BadRequestException(`User not exist`);
 

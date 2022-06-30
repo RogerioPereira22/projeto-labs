@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigurationKeys } from 'src/config/configuration.keys';
 import { HotelService } from './hotel.service';
 
-describe('HotelService', () => {
+describe(ConfigurationKeys.HotelService, () => {
   let service: HotelService;
 
   beforeEach(async () => {

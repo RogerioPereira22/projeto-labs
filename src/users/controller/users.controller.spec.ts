@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from '../service/users.service';
+import { ConfigurationKeys } from 'src/config/configuration.keys';
 
-describe('UsersController', () => {
+describe(ConfigurationKeys.UsersController, () => {
   let controller: UsersController;
 
   beforeEach(async () => {

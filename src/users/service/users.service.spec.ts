@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigurationKeys } from 'src/config/configuration.keys';
 import { UsersService } from './users.service';
 
-describe('UsersService', () => {
+describe(ConfigurationKeys.UsersService, () => {
   let service: UsersService;
 
   beforeEach(async () => {

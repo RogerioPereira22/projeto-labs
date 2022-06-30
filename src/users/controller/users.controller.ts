@@ -14,8 +14,9 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
+import { ConfigurationKeys } from 'src/config/configuration.keys';
 
-@Controller('users')
+@Controller(ConfigurationKeys.users)
 @UseGuards(ThrottlerGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -25,16 +26,15 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
- 
   @UseGuards(JwtAuthGuard)
-   @Get()
+  @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(ConfigurationKeys.id1)
+  findOne(@Param(ConfigurationKeys.id) id: string) {
     const user = this.usersService.findOne(id);
     if (!user) {
       throw new NotFoundException('User does not exists');
@@ -43,8 +43,11 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @Patch(ConfigurationKeys.id1)
+  update(
+    @Param(ConfigurationKeys.id) id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     const user = this.usersService.update(id, updateUserDto);
     if (!user) {
       throw new NotFoundException('User does not exists');
@@ -53,8 +56,8 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(ConfigurationKeys.id1)
+  remove(@Param(ConfigurationKeys.id) id: string) {
     return this.usersService.remove(id);
   }
 }

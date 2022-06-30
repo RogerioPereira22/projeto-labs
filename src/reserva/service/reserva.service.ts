@@ -4,11 +4,12 @@ import { UpdateReservaDto } from '../dto/update-reserva.dto';
 import { Reserva } from '../entities/reserva.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { ConfigurationKeys } from 'src/config/configuration.keys';
 
 @Injectable()
 export class ReservaService {
   constructor(
-    @InjectModel('RESERVA_MODEL') private reservaModel: Model<Reserva>,
+    @InjectModel(ConfigurationKeys.RESERVA_MODEL) private reservaModel: Model<Reserva>,
   ) {}
   async create(createReservaDto: CreateReservaDto): Promise<Reserva> {
     const createdReserva = new this.reservaModel(createReservaDto);

@@ -1,4 +1,20 @@
-export const enum ConfigurationKeys{
+export const enum ConfigurationKeys {
+  JWT_SECRET = 'JWT_SECRET',
+  DATABASE_CONNECTION = 'DATABASE_CONNECTION',
+  HOTEL_MODEL = 'HOTEL_MODEL',
+  USERS_MODEL = 'USERS_MODEL',
+  RESERVA_MODEL = 'RESERVA_MODEL',
+  HotelService = 'HotelService',
+  ReservaService = 'ReservaService',
+  UsersService = 'UsersService',
+  HotelController = 'HotelController',
+  UsersController ='UsersController',
+  ReservaController = 'ReservaController',
+  Users = 'Users',
+  hotel = 'hotel',
+  reserva = 'reserva',
+  id = 'id',
+  id1 = ':id',
  
-  JWT_SECRET = 'JWT_SECRET'
+  users ='users',
 }

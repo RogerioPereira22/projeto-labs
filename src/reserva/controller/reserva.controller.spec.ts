@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigurationKeys } from 'src/config/configuration.keys';
 import { ReservaService } from '../service/reserva.service';
 import { ReservaController } from './reserva.controller';
 
-describe('ReservaController', () => {
+describe(ConfigurationKeys.ReservaController, () => {
   let controller: ReservaController;
 
   beforeEach(async () => {
