@@ -1,30 +1,33 @@
-import { Injectable, NotFoundException,BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../interfaces/users.interfaces';
-import { encryptPassword,comparePassword } from 'src/common/encrypt/encryption';
+import {
+  encryptPassword,
+  comparePassword,
+} from 'src/common/encrypt/encryption';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel('USERS_MODEL') private userModel: Model<User>) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    
     try {
       const createdUser = new this.userModel(createUserDto);
-    return createdUser.save();
-    createUserDto['password'] = encryptPassword(createUserDto.password);
-
-    }
-    catch(error){
+      if (createdUser)
+        throw new BadRequestException(`This username is already taken`);
+      createUserDto['password'] = encryptPassword(createUserDto.password);
+      return createdUser.save();
+    } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
-    
-
-  
 
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
@@ -35,7 +38,8 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    return this.userModel.findByIdAndUpdate(
+   
+    try { return this.userModel.findByIdAndUpdate(
       {
         _id: id,
       },
@@ -46,6 +50,10 @@ export class UsersService {
         new: true,
       },
     );
+    }
+    catch(error){
+      throw new BadRequestException(error.message);
+    }
   }
 
   remove(id: string) {
