@@ -12,6 +12,7 @@ import {
   encryptPassword,
   comparePassword,
 } from 'src/common/encrypt/encryption';
+import { LoginUserDto } from '../dto/login-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -63,4 +64,20 @@ export class UsersService {
       })
       .exec();
   }
+  async login({username, password}: LoginUserDto): Promise<any>{
+    try {
+      const user = await this._userRepository.findOne({where: {username: username}});
+      if(!user) throw new BadRequestException(`User not exist`);
+
+      if(comparePassword(password, user.password)){
+        return this._authService.login(user);
+      }
+
+      throw new BadRequestException(`Password not match`);
+    }
+    catch(error){
+      throw new BadRequestException(error.message);
+    }
+  }
+
 }
