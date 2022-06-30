@@ -1,18 +1,30 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException,BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../interfaces/users.interfaces';
+import { encryptPassword,comparePassword } from 'src/common/encrypt/encryption';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel('USERS_MODEL') private userModel: Model<User>) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const createdUser = new this.userModel(createUserDto);
+    
+    try {
+      const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
+    createUserDto['password'] = encryptPassword(createUserDto.password);
+
+    }
+    catch(error){
+      throw new BadRequestException(error.message);
+    }
   }
+    
+
+  
 
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
