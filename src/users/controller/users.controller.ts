@@ -7,12 +7,16 @@ import {
   Param,
   Delete,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '../service/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 
 @Controller('users')
+@UseGuards(ThrottlerGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -21,11 +25,14 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
+ 
+  @UseGuards(JwtAuthGuard)
+   @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     const user = this.usersService.findOne(id);
@@ -35,6 +42,7 @@ export class UsersController {
     return;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = this.usersService.update(id, updateUserDto);
@@ -44,6 +52,7 @@ export class UsersController {
     return;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);

@@ -35,7 +35,12 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
+    try {
     return this.userModel.find().exec();
+    }
+    catch(error){
+      throw new BadRequestException(error.message);
+    }
   }
 
   async findOne(id: string): Promise<User> {
@@ -61,11 +66,15 @@ export class UsersService {
   }
 
   remove(id: string) {
-    return this.userModel
-      .deleteOne({
-        _id: id,
-      })
-      .exec();
+    try {
+      return this.userModel
+        .deleteOne({
+          _id: id,
+        })
+        .exec();
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
   async login({ username, password }: LoginUserDto): Promise<any> {
     try {
