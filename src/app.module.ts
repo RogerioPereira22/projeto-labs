@@ -46,7 +46,7 @@ import { ConfigurationKeys } from './config/configuration.keys'
       },
     ]),
     DatabaseModule,
-    AuthModule
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

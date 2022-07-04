@@ -19,8 +19,8 @@ import { ConfigurationKeys } from 'src/config/configuration.keys';
 @Injectable()
 export class UsersService {
   constructor(
+    @InjectModel('USERS_MODEL') private userModel: Model<User>,
     private _authService: AuthService,
-    @InjectModel(ConfigurationKeys.USERS_MODEL) private userModel: Model<User>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {

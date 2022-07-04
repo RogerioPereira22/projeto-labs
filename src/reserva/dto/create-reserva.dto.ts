@@ -1,5 +1,14 @@
-import { IsString } from 'class-validator';
+import { IsDate, IsNumber, IsString } from 'class-validator';
 export class CreateReservaDto {
   @IsString()
-  reserva: string;
+  hotel: string;
+  @IsString()
+  guest: string;
+  @IsDate()
+  checkIn: Date;
+  @IsDate()
+  checkOut: Date;
+  @IsNumber()
+  amount: number;
+  
 }
