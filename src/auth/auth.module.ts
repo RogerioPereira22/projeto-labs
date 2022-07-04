@@ -13,7 +13,7 @@ import { ConfigModule } from '@nestjs/config';
       signOptions: { expiresIn: '9000s' },
     }),
   ],
-  providers: [AuthService,JwtStrategy],
+  providers: [AuthService, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

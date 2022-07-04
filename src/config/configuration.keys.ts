@@ -8,12 +8,14 @@ export const enum ConfigurationKeys {
   ReservaService = 'ReservaService',
   UsersService = 'UsersService',
   HotelController = 'HotelController',
-  UsersController ='UsersController',
+  UsersController = 'UsersController',
   ReservaController = 'ReservaController',
   Users = 'Users',
   hotel = 'hotel',
   reserva = 'reserva',
   id = 'id',
   id1 = ':id',
-  users ='users',
+  users = 'users',
+  THROTTLE_TTL = "THROTTLE_TTL",
+  THROTTLE_LIMIT = "THROTTLE_LIMIT"
 }
