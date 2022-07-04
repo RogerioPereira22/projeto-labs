@@ -44,7 +44,11 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    return this.userModel.findById(id).exec();
+    try {
+      return this.userModel.findById(id).exec();
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateReservaDto } from '../dto/create-reserva.dto';
 import { UpdateReservaDto } from '../dto/update-reserva.dto';
 import { Reserva } from '../entities/reserva.entity';
@@ -12,20 +12,37 @@ export class ReservaService {
     @InjectModel(ConfigurationKeys.RESERVA_MODEL) private reservaModel: Model<Reserva>,
   ) {}
   async create(createReservaDto: CreateReservaDto): Promise<Reserva> {
+    try{
     const createdReserva = new this.reservaModel(createReservaDto);
     return createdReserva.save();
+    }
+    catch(error){
+      throw new BadRequestException(error.message);
+    }
   }
 
   async findAll(): Promise<Reserva[]> {
+    try{
     return this.reservaModel.find().exec();
+    }
+    catch(error){
+      throw new BadRequestException(error.message);
+    }
   }
 
   async findOne(id: string): Promise<Reserva> {
+    try{
     return this.reservaModel.findById(id).exec();
+    }
+    catch(error){
+      throw new BadRequestException(error.message);
+    }
   }
 
   async update(id: string, updateUserDto: UpdateReservaDto): Promise<Reserva> {
-    return this.reservaModel.findByIdAndUpdate(
+    
+    try{
+      return this.reservaModel.findByIdAndUpdate(
       {
         _id: id,
       },
@@ -37,12 +54,21 @@ export class ReservaService {
       },
     );
   }
+    catch(error){
+      throw new BadRequestException(error.message);
+    }
+  }
 
   remove(id: string) {
+    try{
     return this.reservaModel
       .deleteOne({
         _id: id,
       })
       .exec();
+    }
+      catch(error){
+        throw new BadRequestException(error.message);
+      }
   }
 }
