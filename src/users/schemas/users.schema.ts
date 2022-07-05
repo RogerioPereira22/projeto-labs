@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import { UsersDataObject } from '../objects/users.object';
 import { plainToInstance } from 'class-transformer';
-export type GuestDocument = Users &
+export type UsersDocument = Users &
   Document & {
     plainToInstance: () => UsersDataObject;
     timestamp: Date;
