@@ -13,4 +13,8 @@ export class CreateUserDto {
   @IsString()
   @MinLength(8)
   password: string;
+
+  @ApiProperty()
+  @IsString()
+  phoneNumber: string;
 }
