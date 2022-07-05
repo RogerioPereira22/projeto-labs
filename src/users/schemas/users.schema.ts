@@ -26,7 +26,7 @@ export type GuestDocument = Users &
     @Prop({
       required: true,
     })
-    password: String,
+    password: string;
 }
 export const UsersSchema = SchemaFactory.createForClass(Users);
 
