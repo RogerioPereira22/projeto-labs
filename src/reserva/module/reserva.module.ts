@@ -8,5 +8,6 @@ import { MongooseModule } from '@nestjs/mongoose';
     MongooseModule.forFeature([{ name: Reserva.name, schema: ReservaSchema }]),
   ],
   providers: [ReservaService],
+  exports: [ReservaService],
 })
 export class ReservaModule {}
