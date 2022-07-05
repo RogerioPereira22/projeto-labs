@@ -23,7 +23,10 @@
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
-
+Framework :NestJS
+API Doc :Swagger
+DB:Atlas MongoDB
+Deployment:Rogerio
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Installation
