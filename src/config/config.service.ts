@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MongooseModuleOptions } from '@nestjs/mongoose';
-import { GoogleMapsModuleConfig } from '../google-maps';
+import { ConfigModuleMaps } from './google-maps';
 
 @Injectable()
 export class AppConfigService {
@@ -11,7 +11,7 @@ export class AppConfigService {
     return this.config.get<MongooseModuleOptions>('mongoDB.config');
   }
 
-  public get googleMapsOptions(): GoogleMapsModuleConfig {
-    return this.config.get<GoogleMapsModuleConfig>('google-maps.config');
+  public get googleMapsOptions(): ConfigModuleMaps {
+    return this.config.get<ConfigModuleMaps>('google-maps.config');
   }
 }

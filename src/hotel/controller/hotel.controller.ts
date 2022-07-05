@@ -1,60 +1,121 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { ReservaService } from 'src/reserva';
+import { MapsService } from 'src/config/google-maps'; 
+import { CreateInputEntrada } from '../entrada/created.reservabyuser'; 
 import { HotelService } from '../service/hotel.service';
-import { CreateHotelDto } from '../dto/create-hotel.dto';
-import { UpdateHotelDto } from '../dto/update-hotel.dto';
-import { ConfigurationKeys } from 'src/config/configuration.keys';
+import { ApiBody, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { UsersService } from 'src/users';
+import { HotelGuard } from '../guards/hotel.guard';
+import { QueryRequired } from '../decorators'; 
 
-@Controller(ConfigurationKeys.hotel)
+@Controller()
 export class HotelController {
-  constructor(private readonly hotelService: HotelService) {}
+  constructor(
+    private readonly hotelsService: HotelService,
+    private readonly mapsService: MapsService,
+    private readonly reservaService: ReservaService,
+    private readonly usersService: UsersService,
+  ) {}
 
-  @Post()
-  create(@Body() createHotelDto: CreateHotelDto) {
-    try{
-    return this.hotelService.create(createHotelDto);
-    }
-    catch(error){
-      throw new BadRequestException(error.message);
-    }
+  @Post('hotels')
+  @ApiOperation({
+    operationId: 'AddHotels',
+    summary: 'Add nearby hotels based on location',
+    description: 'Search hotels from google maps api and add to DB.',
+  })
+  @ApiQuery({
+    name: 'latitude',
+    type: Number,
+    example: 48.130323,
+    description: 'latitude',
+  })
+  @ApiQuery({
+    name: 'longitude',
+    type: Number,
+    example: 11.576362,
+    description: 'longitude',
+  })
+  async addHotels(
+    @QueryRequired('latitude') latitude: number,
+    @QueryRequired('longitude') longitude: number,
+  ) {
+    const hotelsInfo = await this.mapsService.getHotels(
+      latitude,
+      longitude,
+    );
+
+    return Promise.all(
+      hotelsInfo.map((hotel) => this.hotelsService.upsertByPlaceId(hotel)),
+    );
   }
 
-  @Get()
-  findAll() {
-    try {
-       return this.hotelService.findAll();
-    }  catch(error){
-      throw new BadRequestException(error.message);
-    }
-   
+  @Get('hotels')
+  @ApiOperation({
+    operationId: 'GetHotels',
+    summary: 'Retrieve nearby hotels based on location',
+    description: 'Search nearby hotels based on location from the DB.',
+  })
+  @ApiQuery({
+    name: 'latitude',
+    type: Number,
+    example: 48.130323,
+    description: 'latitude',
+  })
+  @ApiQuery({
+    name: 'longitude',
+    type: Number,
+    example: 11.576362,
+    description: 'longitude',
+  })
+  async getHotels(
+    @QueryRequired('latitude') latitude: number,
+    @QueryRequired('longitude') longitude: number,
+  ) {
+    return this.hotelsService.findAll({
+      longitude,
+      latitude,
+    });
   }
 
-  @Get(ConfigurationKeys.id1)
-  findOne(@Param(ConfigurationKeys.id) id: string) {
-    try{
-    return this.hotelService.findOne(id);
-    }
-    catch(error){
-      throw new BadRequestException(error.message);
-    }
+  @Get('hotel/:hotelId/reservas')
+  @UseGuards(HotelGuard)
+  @ApiOperation({
+    operationId: 'GetHotelReservas',
+    summary: 'Retrieve hotel booking',
+    description: 'get all bookings of particular hotel by hotelId.',
+  })
+  async getHotelBookings(@Param('hotelId') hotelId: string) {
+    return this.reservaService.get(hotelId);
   }
 
-  @Patch(ConfigurationKeys.id1)
-  update(@Param(ConfigurationKeys.id) id: string, @Body() updateHotelDto: UpdateHotelDto) {
-    try{
-    return this.hotelService.update(id, updateHotelDto);
-    }
-    catch(error){
-      throw new BadRequestException(error.message);
-    }
-  }
+  @Post('hotel/:hotelId/reserva')
+  @UseGuards(HotelGuard)
+  @ApiOperation({
+    operationId: 'ReservaHotel',
+    summary: 'Book hotel for guest',
+    description: 'Book hotel for specific days for specifc guest.',
+  })
+  @ApiBody({ type: CreateInputEntrada })
+  async bookHotel(
+    @Param('hotelId') hotelId: string,
+    @Body() createInputEntrada: CreateInputEntrada,
+  ) {
+    const { name, email, phoneNumber,password } = createInputEntrada;
+    const guest = await this.usersService.upsert({
+      name,
+      email,
+      phoneNumber,
+      password
+      
+    });
 
-  @Delete(ConfigurationKeys.id1)
-  remove(@Param(ConfigurationKeys.id) id: string) {
-    try{
-    return this.hotelService.remove(id);
-    }
-    catch(error){
-      throw new BadRequestException(error.message);
-    }
+    const { checkIn, checkOut, amount } = createInputEntrada;
+    return this.reservaService.create({
+      hotel: hotelId,
+      guest: guest.id,
+      checkIn,
+      checkOut,
+      amount,
+    });
   }
 }

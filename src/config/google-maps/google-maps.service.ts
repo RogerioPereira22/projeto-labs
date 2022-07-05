@@ -25,7 +25,7 @@ export class MapsService extends Client {
         ({
           name: hotel.name,
           rating: hotel.rating,
-          localId: hotel.place_id,
+          hotelId: hotel.place_id,
           location: [
             hotel.geometry?.location.lat,
             hotel.geometry?.location.lng,

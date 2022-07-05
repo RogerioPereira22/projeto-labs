@@ -5,6 +5,7 @@ import {
   IsEmail,
   IsPhoneNumber,
   Validate,
+  MinLength,
 } from 'class-validator';
 import { IsBeforeConstraint, IsDateConstraint } from '../../utils';
 
@@ -56,5 +57,10 @@ export class CreateInputEntrada {
     example: '350',
     description: 'Valor para reservar hotel',
   })
-  mount: number;
+  amount: number;
+  @ApiProperty({ type: String,
+    example: '35fkgskdfkasjb',
+    description: 'Senha do Usuario',})
+  @MinLength(8)
+  password: string;
 }

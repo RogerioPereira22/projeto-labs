@@ -27,7 +27,7 @@ export class Hotel {
   location: number[];
 
   @Prop()
-  rating: number;
+  avaliacao?: number;
 }
 
 export const HotelSchema = SchemaFactory.createForClass(Hotel);

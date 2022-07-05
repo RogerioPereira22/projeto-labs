@@ -1,7 +1,7 @@
 export interface local {
     name: string;
     rating: number;
-    localId: string;
+    hotelId: string;
     location: [number, number];
   }
   

@@ -1,48 +1,63 @@
-import { UpdateHotelDto } from '../dto/update-hotel.dto';
-import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateHotelDto } from '../dto/create-hotel.dto';
-import { Hotel } from '../entities/hotel.entity';
-import { ConfigurationKeys } from 'src/config/configuration.keys';
+import { Model } from 'mongoose';
+import { CreateHotelDto, FindHotelDto } from '../dto';
+import { HotelDataObject } from '../object/hotel.object';
+import { Hotel, HotelDocument } from '../schema/hotel.schema';
+
 @Injectable()
 export class HotelService {
   constructor(
-    @InjectModel(ConfigurationKeys.HOTEL_MODEL)
-    private hotelModel: Model<Hotel>,
+    @InjectModel(Hotel.name) private hotelModel: Model<HotelDocument>,
   ) {}
-  async create(CreateHotelDto: CreateHotelDto): Promise<Hotel> {
-    const createdHotel = new this.hotelModel(CreateHotelDto);
-    return createdHotel.save();
+
+  async create(createHotelDto: CreateHotelDto): Promise<HotelDataObject> {
+    const hotel = new this.hotelModel(createHotelDto);
+    const hotelDoc = await hotel.save();
+    return hotelDoc.plainToInstance();
   }
 
-  async findAll(): Promise<Hotel[]> {
-    return this.hotelModel.find().exec();
+  async findById(hotelId: string): Promise<Hotel> {
+    return this.hotelModel.findById(hotelId);
   }
 
-  async findOne(id: string): Promise<Hotel> {
-    return this.hotelModel.findById(id).exec();
+  async findByPlaceId(hotelId: string): Promise<Hotel> {
+    return this.hotelModel.findOne({
+      hotelId,
+    });
   }
 
-  async update(id: string, updateHotelDto: UpdateHotelDto): Promise<Hotel> {
-    return this.hotelModel.findByIdAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        updateHotelDto,
-      },
-      {
-        new: true,
-      },
+  async upsertByPlaceId(
+    createHotelDto: CreateHotelDto,
+  ): Promise<HotelDataObject> {
+    const hotel = await this.findByPlaceId(createHotelDto.hotelId);
+    if (!hotel) {
+      return this.create(createHotelDto);
+    }
+
+    const newInfo = { ...hotel, createHotelDto };
+    const hotelDoc = await this.hotelModel.findByIdAndUpdate(
+      hotel,
+      { $set: newInfo },
+      { new: true },
     );
+
+    return hotelDoc.plainToInstance();
   }
 
-  remove(id: string) {
-    return this.hotelModel
-      .deleteOne({
-        _id: id,
-      })
-      .exec();
+  async findAll(params: FindHotelDto): Promise<HotelDataObject[]> {
+    const hotels = await this.hotelModel.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [params.latitude, params.longitude],
+          },
+          $maxDistance: 5000,
+        },
+      },
+    });
+
+    return hotels.map((hotel) => hotel.plainToInstance());
   }
 }

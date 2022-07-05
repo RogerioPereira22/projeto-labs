@@ -1,11 +1,12 @@
 import { IsString } from 'class-validator';
 export class CreateHotelDto {
   @IsString()
-  hotel: string;
+  name: string;
   @IsString()
-  placeId: string;
+  hotelId: string;
   @IsString()
   location: [number, number];
   @IsString()
   avalicao?: number;
+ 
 }
