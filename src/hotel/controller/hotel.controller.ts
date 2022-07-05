@@ -7,8 +7,11 @@ import { ApiBody, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from 'src/users';
 import { HotelGuard } from '../guards/hotel.guard';
 import { QueryRequired } from '../decorators'; 
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 
 @Controller()
+@UseGuards(ThrottlerGuard)
 export class HotelController {
   constructor(
     private readonly hotelsService: HotelService,
@@ -16,7 +19,7 @@ export class HotelController {
     private readonly reservaService: ReservaService,
     private readonly usersService: UsersService,
   ) {}
-
+  @UseGuards(JwtAuthGuard) 
   @Post('hotels')
   @ApiOperation({
     operationId: 'AddHotels',
@@ -48,7 +51,7 @@ export class HotelController {
       hotelsInfo.map((hotel) => this.hotelsService.upsertByPlaceId(hotel)),
     );
   }
-
+  @UseGuards(JwtAuthGuard) 
   @Get('hotels')
   @ApiOperation({
     operationId: 'GetHotels',
@@ -76,7 +79,6 @@ export class HotelController {
       latitude,
     });
   }
-
   @Get('hotel/:hotelId/reservas')
   @UseGuards(HotelGuard)
   @ApiOperation({
