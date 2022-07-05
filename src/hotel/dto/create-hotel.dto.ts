@@ -7,5 +7,5 @@ export class CreateHotelDto {
   @IsString()
   location: [number, number];
   @IsString()
-   avalicao?: number;
+  avalicao?: number;
 }
