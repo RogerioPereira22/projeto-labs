@@ -1,54 +1,28 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { DatabaseModule } from 'src/database/database.module';
-import { RouterModule } from '@nestjs/core';
-import { UsersModule } from 'src/users/module/users.module';
-import { HotelModule } from 'src/hotel/module/hotel.module';
-import { ReservaModule } from 'src/reserva/module/reserva.module';
-import { AuthModule } from './auth/auth.module';
-import { ConfigModule,ConfigService } from '@nestjs/config';
-import Configuration from './config/configuration';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { ConfigurationKeys } from './config/configuration.keys'
-
+import { MongooseModule } from '@nestjs/mongoose';
+import { HotelModule } from './hotel/module/hotel.module';
+import { AppConfigModule, AppConfigService } from './config';
+import { GoogleMapsModule } from './config/google-maps';
+import { ReservaModule } from './reserva';
+import { UsersModule } from './users';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      load: [Configuration]
-      }), 
-      ThrottlerModule.forRootAsync({
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (config: ConfigService) => ({
-          ttl: config.get<number>(ConfigurationKeys.THROTTLE_TTL),
-          limit: config.get<number>(ConfigurationKeys.THROTTLE_LIMIT),
-        }),
-      }),
-    RouterModule.register([
-      {
-        path: 'user',
-        module: UsersModule,
-        children: [
-          {
-            path: 'hotel',
-            module: HotelModule,
-            children: [
-              {
-                path: 'reserva',
-                module: ReservaModule,
-              },
-            ],
-          },
-        ],
-      },
-    ]),
-    DatabaseModule,
-    AuthModule,
+    AppConfigModule,
+    MongooseModule.forRootAsync({
+      imports: [AppConfigModule],
+      inject: [AppConfigService],
+      useFactory: (config: AppConfigService) => config.mongoDBOptions,
+    }),
+    GoogleMapsModule.forRootAsync({
+      imports: [AppConfigModule],
+      inject: [AppConfigService],
+      useFactory: async (config: AppConfigService) => config.googleMapsOptions,
+    }),
+    HotelModule,
+    ReservaModule,
+    UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}
