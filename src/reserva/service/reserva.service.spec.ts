@@ -1,9 +1,9 @@
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
-import { rootMongooseTestModule } from '../root-mongo-test.module';
+import { rootMongooseTestModule } from 'src/root-mongo-test.module';
 import { ReservaService } from './reserva.service';
-import { Reserva,ReservaSchema } from '../schema/reserva.schema'; 
+import { Reserva, ReservaSchema } from '../schema/reserva.schema';
 import * as dayjs from 'dayjs';
 
 describe('ReservaService', () => {

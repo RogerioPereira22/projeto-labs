@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { plainToInstance } from 'class-transformer';
 import mongoose, { Document } from 'mongoose';
-import { ReservasDataObject } from '../objects'; 
+import { ReservasDataObject } from '../objects';
 
-export type BookingDocument = Reserva &
+export type ReservaDocument = Reserva &
   Document & {
     plainToInstance: () => ReservasDataObject;
     timestamp: Date;

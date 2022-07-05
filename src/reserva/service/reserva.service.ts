@@ -1,74 +1,78 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateReservaDto } from '../dto/create-reserva.dto';
-import { UpdateReservaDto } from '../dto/update-reserva.dto';
-import { Reserva } from '../entities/reserva.entity';
-import { Model } from 'mongoose';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ConfigurationKeys } from 'src/config/configuration.keys';
+import { Model, Connection } from 'mongoose';
+import { CreateReservaDto } from '../dto/create-reserva.dto';
+import { ReservasDataObject } from '../objects';
+import { Reserva, ReservaDocument } from '../schema/reserva.schema';
+import { InjectConnection } from '@nestjs/mongoose';
 
 @Injectable()
 export class ReservaService {
+  static MAX_RESERVAS_PER_DAY = 25;
+
+  public logger = new Logger(ReservaService.name);
+
   constructor(
-    @InjectModel(ConfigurationKeys.RESERVA_MODEL) private reservaModel: Model<Reserva>,
+    @InjectModel(Reserva.name) private reservaModel: Model<ReservaDocument>,
+    @InjectConnection() private readonly connection: Connection,
   ) {}
-  async create(createReservaDto: CreateReservaDto): Promise<Reserva> {
-    try{
-    const createdReserva = new this.reservaModel(createReservaDto);
-    return createdReserva.save();
-    }
-    catch(error){
-      throw new BadRequestException(error.message);
-    }
+
+  //isso retornará reservas anteriores também
+  async get(hotel: string): Promise<ReservasDataObject[]> {
+    const reservas = await this.reservaModel.find({
+      hotel,
+    });
+
+    return reservas.map((reserva) => reserva.plainToInstance());
   }
 
-  async findAll(): Promise<Reserva[]> {
-    try{
-    return this.reservaModel.find().exec();
+  async isHotelAvailable(
+    hotel: string,
+    start: Date,
+    end: Date,
+  ): Promise<boolean> {
+    const currrentReservas = await this.reservaModel.find({
+      hotel,
+      checkIn: { $lte: start },
+      checkOut: { $gte: end },
+    });
+
+    if (currrentReservas?.length >= ReservaService.MAX_RESERVAS_PER_DAY) {
+      return false;
     }
-    catch(error){
-      throw new BadRequestException(error.message);
-    }
+
+    return true;
   }
 
-  async findOne(id: string): Promise<Reserva> {
-    try{
-    return this.reservaModel.findById(id).exec();
-    }
-    catch(error){
-      throw new BadRequestException(error.message);
-    }
-  }
+  async create(
+    createReservaDto: CreateReservaDto,
+  ): Promise<ReservasDataObject> {
+    const { hotel, checkIn, checkOut } = createReservaDto;
+    const transactionSession = await this.connection.startSession();
+    try {
+      transactionSession.startTransaction();
 
-  async update(id: string, updateUserDto: UpdateReservaDto): Promise<Reserva> {
-    
-    try{
-      return this.reservaModel.findByIdAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        updateUserDto,
-      },
-      {
-        new: true,
-      },
-    );
-  }
-    catch(error){
-      throw new BadRequestException(error.message);
-    }
-  }
+      const isAvailable = await this.isHotelAvailable(hotel, checkIn, checkOut);
 
-  remove(id: string) {
-    try{
-    return this.reservaModel
-      .deleteOne({
-        _id: id,
-      })
-      .exec();
-    }
-      catch(error){
-        throw new BadRequestException(error.message);
+      if (!isAvailable) {
+        this.logger.log(
+          `hotel ${hotel} reached max reservas on ${checkIn} ${checkOut}`,
+        );
+        throw new NotFoundException(
+          `hotel reached max reservas on ${checkIn} - ${checkOut}`,
+        );
       }
+
+      const reserva = new this.reservaModel(createReservaDto);
+      const reservaDoc: any = await reserva.save();
+      transactionSession.commitTransaction();
+
+      return reservaDoc.plainToInstance();
+    } catch (e) {
+      await transactionSession.abortTransaction();
+      throw e;
+    } finally {
+      await transactionSession.endSession();
+    }
   }
 }
