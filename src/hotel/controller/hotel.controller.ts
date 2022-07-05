@@ -1,17 +1,16 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ReservaService } from 'src/reserva';
-import { MapsService } from 'src/config/google-maps'; 
-import { CreateInputEntrada } from '../entrada/created.reservabyuser'; 
+import { MapsService } from 'src/config/google-maps';
+import { CreateInputEntrada } from '../entrada/created.reservabyuser';
 import { HotelService } from '../service/hotel.service';
 import { ApiBody, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from 'src/users';
 import { HotelGuard } from '../guards/hotel.guard';
-import { QueryRequired } from '../decorators'; 
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { QueryRequired } from '../decorators';
+
 import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 
 @Controller()
-@UseGuards(ThrottlerGuard)
 export class HotelController {
   constructor(
     private readonly hotelsService: HotelService,
@@ -19,7 +18,7 @@ export class HotelController {
     private readonly reservaService: ReservaService,
     private readonly usersService: UsersService,
   ) {}
-  @UseGuards(JwtAuthGuard) 
+  @UseGuards(JwtAuthGuard)
   @Post('hotels')
   @ApiOperation({
     operationId: 'AddHotels',
@@ -42,16 +41,13 @@ export class HotelController {
     @QueryRequired('latitude') latitude: number,
     @QueryRequired('longitude') longitude: number,
   ) {
-    const hotelsInfo = await this.mapsService.getHotels(
-      latitude,
-      longitude,
-    );
+    const hotelsInfo = await this.mapsService.getHotels(latitude, longitude);
 
     return Promise.all(
       hotelsInfo.map((hotel) => this.hotelsService.upsertByPlaceId(hotel)),
     );
   }
-  @UseGuards(JwtAuthGuard) 
+  @UseGuards(JwtAuthGuard)
   @Get('hotels')
   @ApiOperation({
     operationId: 'GetHotels',
@@ -102,13 +98,12 @@ export class HotelController {
     @Param('hotelId') hotelId: string,
     @Body() createInputEntrada: CreateInputEntrada,
   ) {
-    const { name, email, phoneNumber,password } = createInputEntrada;
+    const { name, email, phoneNumber, password } = createInputEntrada;
     const guest = await this.usersService.upsert({
       name,
       email,
       phoneNumber,
-      password
-      
+      password,
     });
 
     const { checkIn, checkOut, amount } = createInputEntrada;
