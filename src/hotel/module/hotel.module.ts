@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ReservaModule } from 'src/reserva';
 import { UsersModule } from 'src/users';
 import { Hotel, HotelSchema } from '../schema/hotel.schema';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -13,6 +14,10 @@ import { Hotel, HotelSchema } from '../schema/hotel.schema';
     GoogleMapsModule,
     ReservaModule,
     UsersModule,
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
   ],
   controllers: [HotelController],
   providers: [HotelService],
