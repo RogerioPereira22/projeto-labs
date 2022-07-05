@@ -9,7 +9,7 @@ export class MapsService extends Client {
     super();
   }
 
-  // google API returns 20 results
+  //Api google retorna 20 resultados
   async getHotels(latitude: number, longitude: number): Promise<local[]> {
     const { data } = await this.placesNearby({
       params: {
