@@ -1,5 +1,5 @@
 
-export interface Usert  {
+export interface Users  {
   id: string;
   name: string;
   email: string;
