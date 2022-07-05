@@ -1,6 +1,6 @@
 export class Hotels {
     name: string;
-    placeId: string;
+    hotelId: string;
     location: [number, number];
     avalicao?: number;
   }
